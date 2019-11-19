@@ -6,12 +6,12 @@ import Ice
 Ice.loadSlice('trawlnet.ice')
 import TrawlNet
 
+
 class Client(Ice.Application):
     def __init__(self):
         print("Client up")
 
-    def download_song(self, intermediate, url, current=None): 
-        #downoad_song es una función que mandará al intermediario la petición de descarga
+    def download_song(self, intermediate, url, current=None):
         msg = intermediate.downloadTask(url)
         print("Manager reply "+msg)
 
