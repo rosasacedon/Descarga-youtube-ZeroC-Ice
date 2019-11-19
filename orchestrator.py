@@ -18,4 +18,21 @@ class Orchestrator(TrawlNet.Orchestrator):
 
 class Server(Ice.Application):
     def run(self, argv):
-        
+        broker = self.communicator()
+        proxy_downloader = broker.stringToProxy(argv[1])
+        downloader = TrawlNet.DownloaderPrx.checkedCast(proxy_downloader)
+
+        if not downloader:
+            raise RuntimeError("Invalid Proxy")
+
+        orch = Orchestrator(downloader)
+        adapter = broker.createObjectAdapter("OrchestratorAdapter")
+        proxy_orch = adapter.addWithUUID(orch)
+        print(proxy_orch)
+        adapter.activate()
+        self.shutdownOnInterrupt()
+        broker.waitForShutdown()
+        return 0
+
+server = Server()
+sys.exit(server.main(sys.argv))
