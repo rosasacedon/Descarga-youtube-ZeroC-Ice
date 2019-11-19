@@ -18,3 +18,10 @@ class Client(Ice.Application):
     def run(self, argv):
          proxy = self.communicator().stringToProxy(argv[1])
          orchestrator = TrawlNet.OrchestratorPrx.checkedCast(proxy)
+         if not orchestrator:
+             raise RuntimeError("Invalid proxy")
+
+         self.download_song(intermediate=orchestrator, url=argv[2])
+
+
+sys.exit(Client().main(sys.argv))
