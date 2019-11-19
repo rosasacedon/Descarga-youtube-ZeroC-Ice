@@ -26,3 +26,17 @@ class Downloader(TrawlNet.Downloader):
 
 class Server(Ice.Application):
     def run(self, argv):
+         #Running Downloader
+        server = Downloader()
+        broker = self.communicator()
+        #Adding adapter
+        adapter = broker.createObjectAdapter("DownloaderAdapter")
+        proxy_server = adapter.add(server, broker.stringToIdentity("downloader"))
+        print(proxy_server)
+        adapter.activate()
+        self.shutdownOnInterrupt()
+        broker.waitForShutdown()
+        return 0
+
+server = Server()
+sys.exit(server.main(sys.argv))
