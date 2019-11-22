@@ -1,5 +1,5 @@
-#!/usr/bin/python3.6
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8; mode: python; -*-
 
 import Ice
 Ice.loadSlice('trawlnet.ice')
@@ -7,28 +7,36 @@ import sys
 import TrawlNet
 
 class Orchestrator(TrawlNet.Orchestrator):
-    def __init__(self, dw):
-        self.downloader = dw
+    def __init__(self, downloader):
+        self.downloader = downloader
 
     def downloadTask(self, url, current=None):
-        print("Received url ->"+url)
-        msg = self.downloader.addDownloadTask(url)
-        return msg
+        print('url que se va a descargar ',url)
+        mensaje = self.downloader.addDownloadTask(url)
+        print("Downloader responde ",mensaje)
+
+        return mensaje
 
 
 class Server(Ice.Application):
+
     def run(self, argv):
+
+        print('Iniciando orquestador')
         broker = self.communicator()
-        proxy_downloader = broker.stringToProxy(argv[1])
-        downloader = TrawlNet.DownloaderPrx.checkedCast(proxy_downloader)
+        prx_downloader = broker.stringToProxy(argv[1])
+        downloader = TrawlNet.DownloaderPrx.checkedCast(prx_downloader)
 
         if not downloader:
-            raise RuntimeError("Invalid Proxy")
+            raise RuntimeError('Proxy no valido')
 
-        orch = Orchestrator(downloader)
+        # Obteniendo el proxy y creando el objeto
+        orquestador = Orchestrator(downloader)
         adapter = broker.createObjectAdapter("OrchestratorAdapter")
-        proxy_orch = adapter.addWithUUID(orch)
-        print(proxy_orch)
+        proxy = adapter.add(orquestador, broker.stringToIdentity("orchestrator"))
+
+        print("'{}'".format(proxy))
+
         adapter.activate()
         self.shutdownOnInterrupt()
         broker.waitForShutdown()

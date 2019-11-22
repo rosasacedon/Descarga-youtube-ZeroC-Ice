@@ -1,10 +1,12 @@
 #!/bin/sh
 
-./downloader.py --Ice.Config=server.config | tee proxy-downloader.out &
 
-proxy=$(tail -1 proxy-downloader.out)
+./downloader.py --Ice.Config=server.config | tee proxy_downloader.out &
 
-./orchestrator.py --Ice.Config=orchestrator.config "$proxy"
+sleep 2
+
+./orchestrator.py --Ice.Config=orchestrator.config "$(head -1 proxy_downloader.out)"
+
 
 
 
