@@ -1,5 +1,8 @@
 # Laboratorio-sistemas-distribuidos
-Laboratorio sistemas distribuidos Escuela Superior de Informática.
+Laboratorio sistemas distribuidos Escuela Superior de Informática.https://github.com/rosasacedon/SacedonMartin
+Rosa María Sacedón Ortega 
+Victor Martin Alonso 
+
 
 Pasos para la ejecución:
 
