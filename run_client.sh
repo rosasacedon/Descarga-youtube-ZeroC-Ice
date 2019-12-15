@@ -1,11 +1,8 @@
 #!/bin/sh
+#
 
-echo "Running client"
+PYTHON=python3
 
-#nombre_interprete_python nombre_clase.py "<proxy_orchestrator>" "<url>" 
-#./client.py $1 $2
-#Ejecucion segun el interprete python3 cliente.py "proxy entre comillas" "youtube.com"
-#./cliente.py $1 $2
+CLIENT_CONFIG=server.config
 
-#Se ejecuta ./run_client.sh "<proxy_orchestrator>" "<url>" 
-./client.py "$1" "$2"
+$PYTHON client.py --Ice.Config=$CLIENT_CONFIG "$1" "$2"
