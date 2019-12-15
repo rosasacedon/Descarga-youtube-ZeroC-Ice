@@ -10,8 +10,15 @@ Pasos para la ejecución:
 
     ./run_server.sh 
 
-2- Copiar el identificador del orchestrator y ejecutar lo siguiente: 
+2- En otra terminal ejecutamos:
+
+    ./run_server.sh 
+    
+3- Copiar el identificador del primer orchestrator y ejecutar lo siguiente: 
  
     ./run_client.sh "<id_orchestrator>" "<url_youtube>"
 
-Como dato aclaratorio en el proxy_downloader.out tienes los datos de nuestra ultima ejecucion
+4- Ejecutar el siguiente comando para obtener los datos de descarga de un orchestator:
+
+    ./cliente.py "<id_orchestrator>"
+
