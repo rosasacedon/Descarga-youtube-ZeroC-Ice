@@ -16,21 +16,19 @@ class Client(Ice.Application):
     def descargar_cancion(self, orchestrator, url, current=None): # pylint: disable=W0613
         ''' Descargar cancion '''
         orchestrator.downloadTask(url)
-        
+ 
     def run(self, argv):
         ''' Run '''
-        lista = []
+        
         proxy = self.communicator().stringToProxy(argv[1])
         orchestrator = TrawlNet.OrchestratorPrx.checkedCast(proxy)
-        if not orchestrator:
-            raise RuntimeError("Invalid proxy")
-        
+
         if len(argv) == 2:
             lista = orchestrator.getFileList()
             print(lista)
-            sys.exit()
-        
-        self.descargar_cancion(orchestrator, argv[2])
+            sys.exit
+        if len(argv) == 3:
+            self.descargar_cancion(orchestrator, argv[2])
 
 
 
