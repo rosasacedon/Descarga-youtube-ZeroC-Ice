@@ -8,8 +8,8 @@ Downloader
 import sys
 import hashlib
 import os.path
-import youtube_dl #pylint: disable=E0401
-import Ice # pylint: disable=E0401,E0401
+import youtube_dl
+import Ice # pylint: disable=E0401
 import IceStorm
 Ice.loadSlice('trawlnet.ice')
 import TrawlNet # pylint: disable=E0401,C0413
@@ -98,7 +98,7 @@ class NullLogger:
         error method
         '''
         pass
-        
+
 _YOUTUBEDL_OPTS_ = {
     'format': 'bestaudio/best',
     'postprocessors': [{
@@ -141,6 +141,8 @@ def compute_hash(filename):
         for chunk in iter(lambda: new_file.read(4096), b''):
             file_hash.update(chunk)
     return file_hash.hexdigest()
+
+
 
 SERVER = Server()
 sys.exit(SERVER.main(sys.argv))
