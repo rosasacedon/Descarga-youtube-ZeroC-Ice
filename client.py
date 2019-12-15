@@ -1,27 +1,42 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8; -*-
+'''
+Implementacion cliente
+'''
 
 import sys
-import Ice
+import Ice # pylint: disable=E0401,E0401
 Ice.loadSlice('trawlnet.ice')
-import TrawlNet
-
+import TrawlNet # pylint: disable=E0401,C0413
 
 class Client(Ice.Application):
-    def __init__(self):
-        print("Client up")
+    '''
+    Clase cliente
+    '''
+    def descargar_cancion(self, orchestrator, url, current=None):
+        ''' Descargar cancion '''
+        orchestrator.downloadTask(url)
+ 
 
-    def download_song(self, intermediate, url, current=None):
-        msg = intermediate.downloadTask(url)
-        print("Manager reply "+msg)
+    def get_list(self, orchestrator, current=None):
+        ''' obtener lista '''
+        lista = []
+        lista = orchestrator.getFileList()
+        print(lista)
 
     def run(self, argv):
-         proxy = self.communicator().stringToProxy(argv[1])
-         orchestrator = TrawlNet.OrchestratorPrx.checkedCast(proxy)
-         if not orchestrator:
-             raise RuntimeError("Invalid proxy")
+        ''' Run '''
+        proxy = self.communicator().stringToProxy(argv[1])
+        orchestrator = TrawlNet.OrchestratorPrx.checkedCast(proxy)
+        if not orchestrator:
+            raise RuntimeError("Invalid proxy")
+        
+        if len(argv) == 2:
+            self.get_list(orchestrator)
+            sys.exit()
+        
+        self.descargar_cancion(orchestrator, argv[2])
 
-         self.download_song(intermediate=orchestrator, url=argv[2])
 
 
 sys.exit(Client().main(sys.argv))
