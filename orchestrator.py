@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8; mode: python; -*-
+
 import sys
-import Ice # pylint: disable=E0401,E0401
+import Ice # pylint: disable=E0401
 import IceStorm
 Ice.loadSlice('trawlnet.ice')
 import TrawlNet # pylint: disable=E0401,C0413
@@ -36,6 +37,7 @@ class FileUpdatesEventI(TrawlNet.UpdateEvent):
             file_hash = file_info.hash
             if file_hash not in self.orchestrator.files:
                 self.orchestrator.files[file_hash] = file_info.name
+
 
 class OrchestratorI(TrawlNet.Orchestrator):
     '''
@@ -102,6 +104,7 @@ class GestionOrchestrators():
         self.file_updates_proxy = self.adapter.addWithUUID(self.file_updates)
         self.file_topic.subscribeAndGetPublisher(self.qos, self.file_updates_proxy)
 
+
     def enviar_downloadTask(self, url):
         '''
         send_downloadTask
@@ -117,6 +120,7 @@ class GestionOrchestrators():
         print("Hola soy el nuevo %s" % orchestrator.ice_toString())
         self.orchestrators[orchestrator.ice_toString()] = orchestrator
         orchestrator.announce(TrawlNet.OrchestratorPrx.checkedCast(self.proxy))
+
 
     def nuevo(self, orchestrator):
         if orchestrator.ice_toString() in self.orchestrators:
@@ -137,7 +141,7 @@ class GestionOrchestrators():
         return fileList
 
     def run_orchestrator(self):
-        ''' iniciar orchestrator '''
+        ''' Iniciar orchestrator '''
         self.adapter.activate()
         self.publisher.hello(TrawlNet.OrchestratorPrx.checkedCast(self.proxy))
 
@@ -167,8 +171,9 @@ class Server(Ice.Application):  #pylint: disable=R0903
 def create_topic_by_name(topic_name, topic_mgr):
     try:
         return topic_mgr.retrieve(topic_name)
-    except IceStorm.NoSuchTopic:
+    except IceStorm.NoSuchTopic: # pylint: disable=E1101
         return topic_mgr.create(topic_name)
+
 
 def get_topic_manager(broker):
     key = 'IceStorm.TopicManager.Proxy'
