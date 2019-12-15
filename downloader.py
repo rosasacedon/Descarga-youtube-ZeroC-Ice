@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8; -*-
+# -*- coding: utf-8 -*-
 
 '''
 Downloader
 '''
 
 import sys
-import os.path
 import hashlib
+import os.path
 import youtube_dl #pylint: disable=E0401
 import Ice # pylint: disable=E0401,E0401
 import IceStorm
@@ -17,61 +17,65 @@ import TrawlNet # pylint: disable=E0401,C0413
 
 class DownloaderI(TrawlNet.Downloader):  # pylint: disable=R0903
     '''
-    Downloader
+    DownloaderI
     '''
-     publisher = None
+    publisher = None
 
-    def __init__(self, topic):
-        self.topic = topic
-    
     def addDownloadTask(self, url, current=None): # pylint: disable=C0103, R0201, W0613
         '''
-        Task
+        addDownloadTask
         '''
-        fileSystem = download_mp3(url)
-        fileInfo = TrawlNet.FileInfo()
-        fileInfo.name = os.path.basename(fileSystem)
-        fileInfo.hash = hash_this(fileInfo.name)
-        orchestrators = self.topic.getPublisher()
-        object_orchestrator_event = TrawlNet.UpdateEventPrx.uncheckedCast(orchestrators)
-        object_orchestrator_event.newFile(fileInfo)
-        return fileInfo
+        descarga = download_mp3(url)
+        if not descarga:
+            raise TrawlNet.DownloadError("Error en la descarga")
+
+        file_info = TrawlNet.FileInfo()
+        file_info.name = os.path.basename(descarga)
+        file_info.hash = compute_hash(file_info.name)
+
+        if self.publisher is not None:
+            self.publisher.newFile(file_info)
+            
+        return file_info
 
 class Server(Ice.Application): # pylint: disable=R0903
     '''
-    Server instance
+    Server
     '''
-    def get_topic_manager(self):
+    def run(self, argv): # pylint: disable=W0613,W0221
+        '''
+        Run
+        '''
         key = 'IceStorm.TopicManager.Proxy'
+        topic_name = "UpdateEvents"
         proxy = self.communicator().propertyToProxy(key)
         if proxy is None:
             return None
 
-        return IceStorm.TopicManagerPrx.checkedCast(proxy)
+        topic_mgr = IceStorm.TopicManagerPrx.checkedCast(proxy) # pylint: disable=E1101
 
-    def run(self, argv): # pylint: disable=W0613
-        '''
-        Run Server
-        '''
-        topic_mgr = self.get_topic_manager()
         if not topic_mgr:
             return 2
 
-        topic_name = "UpdateEvents"
         try:
             topic = topic_mgr.retrieve(topic_name)
-        except IceStorm.NoSuchTopic:
+        except IceStorm.NoSuchTopic: # pylint: disable=E1101
             topic = topic_mgr.create(topic_name)
 
-        servant = DownloaderI(topic)
         broker = self.communicator()
         adapter = broker.createObjectAdapter("DownloaderAdapter")
-        prox = adapter.add(servant, broker.stringToIdentity("downloader"))
-        print(prox, flush=True)
+
+        downloader = DownloaderI()
+        publisher = topic.getPublisher()
+
+        downloader.publisher = TrawlNet.UpdateEventPrx.uncheckedCast(publisher)
+        proxy = adapter.addWithUUID(downloader)
+        print(proxy, flush=True)
         adapter.activate()
         self.shutdownOnInterrupt()
         broker.waitForShutdown()
         return 0
+
 
 class NullLogger:
     '''
@@ -79,23 +83,22 @@ class NullLogger:
     '''
     def debug(self, msg):
         '''
-        Debug
+        debug method
         '''
         pass
 
     def warning(self, msg):
         '''
-        Warning
+        warning method
         '''
         pass
 
     def error(self, msg):
         '''
-        Error
+        error method
         '''
         pass
-
-
+        
 _YOUTUBEDL_OPTS_ = {
     'format': 'bestaudio/best',
     'postprocessors': [{
@@ -107,7 +110,7 @@ _YOUTUBEDL_OPTS_ = {
 }
 
 
-def download_mp3(url, destination='./music/'):
+def download_mp3(url, destination='./'):
     '''
     Synchronous download from YouTube
     '''
@@ -129,13 +132,15 @@ def download_mp3(url, destination='./music/'):
     filename = filename[:filename.rindex('.') + 1]
     return filename + options['postprocessors'][0]['preferredcodec']
 
-def hash_this(filename):
-    fileHash = hashlib.sha256()
-    with open(filename, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b''):
-            fileHash.update(chunk)
-    return fileHash.hexdigest()
+def compute_hash(filename):
+    '''
+    Compute
+    '''
+    file_hash = hashlib.sha256()
+    with open(filename, "rb") as new_file:
+        for chunk in iter(lambda: new_file.read(4096), b''):
+            file_hash.update(chunk)
+    return file_hash.hexdigest()
 
-
-SERVER_DOWN = Server()
-sys.exit(SERVER_DOWN.main(sys.argv))
+SERVER = Server()
+sys.exit(SERVER.main(sys.argv))
