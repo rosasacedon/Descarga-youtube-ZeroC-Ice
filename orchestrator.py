@@ -2,10 +2,12 @@
 # -*- coding: utf-8; mode: python; -*-
 
 import sys
-import Ice # pylint: disable=E0401
+import Ice # pylint: disable=E0401,E0401
 import IceStorm
 Ice.loadSlice('trawlnet.ice')
 import TrawlNet # pylint: disable=E0401,C0413
+
+from transfer_factory import TransferI
 
 UPDATE_EVENTS = "UpdateEvents"
 ORCHESTRATOR_SYNC = "OrchestratorSync"
@@ -51,6 +53,11 @@ class OrchestratorI(TrawlNet.Orchestrator):
         '''
         if self.orchestrator:
             return self.orchestrator.enviar_downloadTask(url)
+
+    def getFile(self, song, current): #pylint: disable=C0103,W0613,R0201
+        ''' Comprobar si existe la song en files antes '''
+        if self.orchestrator:
+            return self.orchestrator.get_file(song, current)
 
     def getFileList(self, current=None):
         '''
@@ -111,6 +118,13 @@ class GestionOrchestrators():
         '''
         return self.downloader.addDownloadTask(url)
 
+    def get_file(self, song, current):
+        controller = TransferI(song)
+        proxy = current.adapter.addWithUUID(controller)
+        transfer = TrawlNet.TransferPrx.checkedCast(proxy)
+        return transfer
+
+
     def saludar_orchestrator(self, orchestrator):
         '''
         saludar 
@@ -141,7 +155,7 @@ class GestionOrchestrators():
         return fileList
 
     def run_orchestrator(self):
-        ''' Iniciar orchestrator '''
+        ''' iniciar orchestrator '''
         self.adapter.activate()
         self.publisher.hello(TrawlNet.OrchestratorPrx.checkedCast(self.proxy))
 
@@ -171,7 +185,7 @@ class Server(Ice.Application):  #pylint: disable=R0903
 def create_topic_by_name(topic_name, topic_mgr):
     try:
         return topic_mgr.retrieve(topic_name)
-    except IceStorm.NoSuchTopic: # pylint: disable=E1101
+    except IceStorm.NoSuchTopic:
         return topic_mgr.create(topic_name)
 
 
