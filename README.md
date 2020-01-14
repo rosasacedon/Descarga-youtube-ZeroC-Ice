@@ -45,3 +45,10 @@ Esto ejecutará todos los nodos de la práctica.
     ./run_client.sh
     
 ## Descripción de la práctica
+
+El objetivo principal del proyecto es diseñar un sistema cliente-servidor que permita la descarga
+de ficheros a partir de URIs. El ejemplo típico será la descarga de clips de audio de YouTube. La
+implementación de este proyecto permitirá al alumno trabajar, mediante ZeroC Ice, los siguientes
+aspectos:
+
+
