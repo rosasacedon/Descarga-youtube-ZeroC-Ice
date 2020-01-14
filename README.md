@@ -1,24 +1,47 @@
 # Laboratorio-sistemas-distribuidos
-Laboratorio sistemas distribuidos Escuela Superior de Informática.https://github.com/rosasacedon/SacedonMartin
-Rosa María Sacedón Ortega 
-Victor Martin Alonso 
+Laboratorio *sistemas distribuidos*
+
+Escuela Superior de Informática.
+
+https://github.com/rosasacedon/SacedonMartin
+
+##  Miembros
+* *Rosa María Sacedón Ortega*
+* *Victor Martin Alonso*
+
+## Manual de Usuario
+Este manual de usuario pretende explicar la funcionalidad de los componentes de la práctica y su forma de ejecución.
 
 
-Pasos para la ejecución:
+### Pasos para ejecutar
 
 1- En una terminal ejecutar lo siguiente:
 
-    ./run_server.sh 
+    make run
+
+Esto ejecutará todos los nodos de la práctica.
 
 2- En otra terminal ejecutamos:
 
-    ./run_server.sh 
+    icegridgui
     
-3- Copiar el identificador del primer orchestrator y ejecutar lo siguiente: 
+2.1- Creamos una nueva conexión
  
-    ./run_client.sh "<id_orchestrator>" "<url_youtube>"
+2.2- Abrimos el archivo el archivo xml que contiene la aplicación.
+    File -> Open -> *YoutubeDownloaderApp.xml*
+    
+2.3- Guardamos al registro con el botón (save to a registry)
 
-4- Ejecutar el siguiente comando para obtener los datos de descarga de un orchestator:
+2.4- Distribuimos la aplicación en el Live Deployment
+    Tools -> Path distribution -> Apply path distribution
 
-    ./cliente.py "<id_orchestrator>"
+2.5- Ejecutamos los servidores con cierto orden.
+    1) IceStorm
+    2) Transfer / Downloader
+    3) Orchestrators
+    
+3- Ejecutar el cliente
 
+    ./run_client.sh
+    
+## Descripción de la práctica
