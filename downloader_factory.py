@@ -2,90 +2,19 @@
 # -*- coding: utf-8 -*-
 
 '''
-Downloader
+Downloader 
 '''
 
 import sys
 import hashlib
 import os.path
-import youtube_dl #pylint: disable=E0401
-import Ice # pylint: disable=E0401,E0401
+import youtube_dl 
+import Ice # pylint: disable=E0401
 import IceStorm
 Ice.loadSlice('trawlnet.ice')
 import TrawlNet # pylint: disable=E0401,C0413
 
-
-class DownloaderFactoryI(TrawlNet.DownloaderFactory):
-    ''' Downloader Factory '''
-    def create(self, current):
-        ''' Create '''
-        servant = DownloaderI()
-        proxy_downloader = current.adpater.addWithUUID(servant)
-        return TrawlNet.TransferPrx.checkedCast(proxy_downloader)
-
-
-
-class DownloaderI(TrawlNet.Downloader):  # pylint: disable=R0903
-    '''
-    DownloaderI
-    '''
-    publisher = None
-
-    def addDownloadTask(self, url, current=None): # pylint: disable=C0103, R0201, W0613
-        '''
-        addDownloadTask
-        '''
-        descarga = download_mp3(url)
-        if not descarga:
-            raise TrawlNet.DownloadError("Error en la descarga")
-
-        file_info = TrawlNet.FileInfo()
-        file_info.name = os.path.basename(descarga)
-        file_info.hash = compute_hash(file_info.name)
-
-        if self.publisher is not None:
-            self.publisher.newFile(file_info)
-            
-        return file_info
-
-class Server(Ice.Application): # pylint: disable=R0903
-    '''
-    Server
-    '''
-    def run(self, argv): # pylint: disable=W0613,W0221
-        '''
-        Run
-        '''
-        key = 'IceStorm.TopicManager.Proxy'
-        topic_name = "UpdateEvents"
-        proxy = self.communicator().propertyToProxy(key)
-        if proxy is None:
-            return None
-
-        topic_mgr = IceStorm.TopicManagerPrx.checkedCast(proxy) # pylint: disable=E1101
-
-        if not topic_mgr:
-            return 2
-
-        try:
-            topic = topic_mgr.retrieve(topic_name)
-        except IceStorm.NoSuchTopic: # pylint: disable=E1101
-            topic = topic_mgr.create(topic_name)
-
-        broker = self.communicator()
-        properties = broker.getProperties()
-        adapter = broker.createObjectAdapter("DownloaderAdapter")
-
-        downloader = DownloaderFactoryI()
-        publisher = topic.getPublisher()
-        factory_id = properties.getProperty('DownloaderFactoryIdentity')
-        downloader.publisher = TrawlNet.UpdateEventPrx.uncheckedCast(publisher)
-        proxy = adapter.add(downloader, broker.stringToIdentity(factory_id))
-        print(proxy, flush=True)
-        adapter.activate()
-        self.shutdownOnInterrupt()
-        broker.waitForShutdown()
-        return 0
+import utils as utilidades
 
 
 class NullLogger:
@@ -94,19 +23,19 @@ class NullLogger:
     '''
     def debug(self, msg):
         '''
-        debug method
+        debug metodo
         '''
         pass
 
     def warning(self, msg):
         '''
-        warning method
+        warning metodo
         '''
         pass
 
     def error(self, msg):
         '''
-        error method
+        error metodo
         '''
         pass
 
@@ -121,16 +50,16 @@ _YOUTUBEDL_OPTS_ = {
 }
 
 
-def download_mp3(url, destination='./'):
+def download_mp3(url, destination='./downloads/'):
     '''
-    Synchronous download from YouTube
+    Sincronizacion desde Youtube para la descarga
     '''
     options = {}
     task_status = {}
 
     def progress_hook(status):
         '''
-        progress hook
+        progreso hook
         '''
         task_status.update(status)
     options.update(_YOUTUBEDL_OPTS_)
@@ -143,17 +72,96 @@ def download_mp3(url, destination='./'):
     filename = filename[:filename.rindex('.') + 1]
     return filename + options['postprocessors'][0]['preferredcodec']
 
-def compute_hash(filename):
+def calculate_hash(filename):
     '''
-    Compute
+    Crear hash
     '''
-    file_hash = hashlib.sha256()
-    with open(filename, "rb") as new_file:
+    file_hash = hashlib.md5()
+    route = "./downloads/"+filename
+    with open(route, "rb") as new_file:
         for chunk in iter(lambda: new_file.read(4096), b''):
             file_hash.update(chunk)
     return file_hash.hexdigest()
 
 
+class DownloaderI(TrawlNet.Downloader):  # pylint: disable=R0903
+    '''
+    Downloader
+    '''
+    publisher = None
 
-SERVER = Server()
-sys.exit(SERVER.main(sys.argv))
+    def __init__(self, publisher):
+        ''' Constructor de clase '''
+        self.publisher = publisher
+
+    def addDownloadTask(self, url, current=None): # pylint: disable=C0103, R0201, W0613
+        '''
+        Downloader
+        '''
+        try:
+            file_to_download = download_mp3(url)
+        except:
+            raise TrawlNet.DownloadError()
+
+        fileInfo = TrawlNet.FileInfo()
+        fileInfo.name = os.path.basename(file_to_download)
+        fileInfo.hash = calculate_hash(fileInfo.name)
+
+        if self.publisher is not None:
+            self.publisher.newFile(fileInfo)
+
+        return fileInfo
+
+    def destroy(self, current):
+        ''' Destroy '''
+        try:
+            current.adapter.remove(current.id)
+        except Exception as e:
+            print(e, flush=True)
+
+
+class DownloaderFactoryI(TrawlNet.DownloaderFactory):
+    '''
+    Downloader Factory I
+    '''
+    publisher = None
+
+    def __init__(self, publisher):
+        ''' Constructor de clase '''
+        self.publisher = publisher
+
+    def create(self, current):
+        ''' metodo create '''
+        downloader = DownloaderI(self.publisher)
+        proxy_downlader = current.adapter.addWithUUID(downloader)
+        return TrawlNet.DownloaderPrx.checkedCast(proxy_downlader)
+
+
+
+
+class Server(Ice.Application): # pylint: disable=R0903
+    '''
+    Server
+    '''
+    def run(self, argv): # pylint: disable=W0613,W0221
+        '''
+        run ice class
+        '''
+        broker = self.communicator()
+        properties = broker.getProperties()
+        topic = utilidades.Topics(broker)
+        factory = properties.getProperty("DownloaderFactoryIdentity")
+        adapter = broker.createObjectAdapter("DownloaderAdapter")
+        publisher = TrawlNet.UpdateEventPrx.uncheckedCast(topic.get_file_topic().getPublisher())
+        downloader = DownloaderFactoryI(publisher)
+        
+        proxy = adapter.add(downloader, broker.stringToIdentity(factory))
+        print(proxy, flush=True)
+        adapter.activate()
+        self.shutdownOnInterrupt()
+        broker.waitForShutdown()
+        return 0
+
+
+SERVER_DOWN = Server()
+sys.exit(SERVER_DOWN.main(sys.argv))
