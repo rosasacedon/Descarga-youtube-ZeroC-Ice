@@ -51,7 +51,7 @@ YoutubeDownloaderApp.xml: Archivo xml con la configuracion del icegrid, listo pa
 
 1- En una terminal ejecutamos 
 
-    make run
+    run_server.sh
   
   Esto ejecutará todos los nodos de la práctica
   
