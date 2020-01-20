@@ -25,7 +25,7 @@ downloads-node.config: Archivo de configuracion del nodo downloads, que es el qu
 
 Makefile: Este archivo contiene las instrucciones para desplegar los nodos del sistema mediante una llamada make run.
 
-orchestrator.py:
+orchestrator.py: Gestiona las peticiones del cliente.
 
 orchestrator-node.config: Archivo de configuracion del nodo orchestrator.
 
@@ -35,7 +35,7 @@ run_client.sh: Ejecutable para arrancar el cliente.
 
 run_server.sh: Ejecutable para arrancar los servidores.
 
-templates.xml:
+templates.xml: Plantilla del orchestrator.
 
 trawlnet.ice: Archivo ice con las estructuras basicas del sistema distribuido.
 
@@ -117,7 +117,7 @@ Esto ejecutará todos los nodos de la práctica.
     
 3- Ejecutar el cliente
 
-    ./run_client.sh
+    ./run_client.sh <url> <nombre_fichero>
     
 ## Descripción de la práctica
 
