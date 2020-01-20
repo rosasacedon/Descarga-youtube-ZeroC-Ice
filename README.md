@@ -16,8 +16,7 @@ Este manual de usuario pretende explicar la funcionalidad de los componentes de 
 client.config: Archivo con la configuracion del cliente para poderlo ejecutar.
 
 client.py: Contiene el cliente y las llamadas para descargas los archivos mp3 o tranferir los existentes, que estas opciones se controlan mediante 
-los flags --downloader y --transfer, la ejecucion de este cliente para descargar por ejemplo un video sería: 
-./client.py --Ice.Config=client.config "orchestrator" "--download" "<url>" y el tranfer sería: ./client.py --Ice.Config=client.config "orchestrator" "--transfer" "<nombre_archivo>"
+los flags --downloader y --transfer.
 
 downloader_factory.py: Fabrica downloaders en funcion de las peticiones de descarga que haga el cliente.
 
