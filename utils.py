@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8; mode: python; -*-
 
-''' Clase topics de Icestorm '''
+''' Topics Icestorm class '''
 
 import IceStorm
 
