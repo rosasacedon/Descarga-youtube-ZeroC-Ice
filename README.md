@@ -10,7 +10,39 @@ https://github.com/rosasacedon/SacedonMartin
 * *Victor Martin Alonso*
 
 ## Manual de Usuario
+
 Este manual de usuario pretende explicar la funcionalidad de los componentes de la práctica y su forma de ejecución.
+
+client.config: Archivo con la configuracion del cliente para poderlo ejecutar.
+
+client.py: Contiene el cliente y las llamadas para descargas los archivos mp3 o tranferir los existentes, que estas opciones se controlan mediante 
+los flags --downloader y --transfer, la ejecucion de este cliente para descargar por ejemplo un video sería: 
+./client.py --Ice.Config=client.config "orchestrator" "--download" "<url>" y el tranfer sería: ./client.py --Ice.Config=client.config "orchestrator" "--transfer" "<nombre_archivo>"
+
+downloader_factory.py: Fabrica downloaders en funcion de las peticiones de descarga que haga el cliente.
+
+downloads-node.config: Archivo de configuracion del nodo downloads, que es el que gestiona las peticiones de descarga.
+
+Makefile: Este archivo contiene las instrucciones para desplegar los nodos del sistema mediante una llamada make run.
+
+orchestrator.py:
+
+orchestrator-node.config: Archivo de configuracion del nodo orchestrator.
+
+registry-node.config: Archivo de configuracion del nodo registry.
+
+run_client.sh: Ejecutable para arrancar el cliente.
+
+run_server.sh: Ejecutable para arrancar los servidores.
+
+templates.xml:
+
+trawlnet.ice: Archivo ice con las estructuras basicas del sistema distribuido.
+
+utils.py: Archivo con funcionalidades sobre los canales de eventos.
+
+YoutubeDownloaderApp.xml: Archivo xml con la configuracion del icegrid, listo para cargarlo en el icegrid y desplegarlo.
+
 
 
 ### Pasos para ejecutar
