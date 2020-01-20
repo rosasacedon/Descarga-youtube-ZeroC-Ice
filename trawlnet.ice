@@ -4,7 +4,7 @@ module TrawlNet {
   exception GeneralError {
       string reason;
   };
-  
+
   exception DownloadError extends GeneralError {};
   exception TransferError extends GeneralError {};
 
