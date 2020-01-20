@@ -47,6 +47,39 @@ YoutubeDownloaderApp.xml: Archivo xml con la configuracion del icegrid, listo pa
 
 ### Pasos para ejecutar
 
+* *CON MAKEFILE
+
+1- En una terminal ejecutamos 
+
+    make run
+
+Esto ejecutará todos los nodos de la práctica
+
+2- En otra terminal ejecutamos: 
+
+    icegridgui
+    
+2.1- Creamos una nueva conexión
+ 
+2.2- Abrimos el archivo el archivo xml que contiene la aplicación.
+    File -> Open -> *YoutubeDownloaderApp.xml*
+    
+2.3- Guardamos al registro con el botón (save to a registry)
+
+2.4- Distribuimos la aplicación en el Live Deployment
+    Tools -> Path distribution -> Apply path distribution
+
+2.5- Ejecutamos los servidores con cierto orden.
+    1) IceStorm
+    2) Transfer / Downloader
+    3) Orchestrators
+    
+3- Ejecutar el cliente
+
+    ./run_client.sh
+
+* *CON LOS ARCHIVOS .SH
+
 1- En una terminal ejecutar lo siguiente:
 
     make run
