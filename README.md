@@ -51,7 +51,7 @@ YoutubeDownloaderApp.xml: Archivo xml con la configuracion del icegrid, listo pa
 
 1- En una terminal ejecutamos 
 
-    run_server.sh
+    make run
   
   Esto ejecutará todos los nodos de la práctica
   
@@ -76,13 +76,13 @@ YoutubeDownloaderApp.xml: Archivo xml con la configuracion del icegrid, listo pa
     
 3- Ejecutar el cliente con los tres makes que se muestran a continuación: 
 
+3.1- Para la descarga 
+	
+	make run-client-download url="<url>"
+	
 3.1- Para la lista
 
 	make run-client-list
-	
-3.2- Para la descarga 
-	
-	make run-client-download url="<url>"
 	
 3.3- Para transferir
 
@@ -92,7 +92,7 @@ YoutubeDownloaderApp.xml: Archivo xml con la configuracion del icegrid, listo pa
 
 1- En una terminal ejecutar lo siguiente:
 
-    make run
+    run_server.sh
 
 Esto ejecutará todos los nodos de la práctica.
 
